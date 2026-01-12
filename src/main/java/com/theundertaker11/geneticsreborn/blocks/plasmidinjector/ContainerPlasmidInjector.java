@@ -62,7 +62,7 @@ public class ContainerPlasmidInjector extends BaseContainer {
 					else return ItemStack.EMPTY;
 				}
 				else if(slot.getStack().getItem() == GRItems.GlassSyringe) {
-					if (itemstack1.getTagCompound().getInteger("pure") == 1) {
+					if (itemstack1.getTagCompound() != null && itemstack1.getTagCompound().getInteger("pure") == 1) {
 						if (!this.mergeItemStack(slot.getStack(), 37, 38, false)) {
 							this.mergeItemStack(slot.getStack(), 37, 38, false);
 							return ItemStack.EMPTY;
