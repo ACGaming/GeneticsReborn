@@ -37,11 +37,13 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 
-@Mod(modid = Reference.MODID, version = Reference.VERSION, name = Reference.NAME, acceptedMinecraftVersions = Reference.ACCEPTED_MINECRAFT)
+@Mod(modid = Reference.MODID, version = Reference.VERSION, name = Reference.NAME, acceptedMinecraftVersions = Reference.ACCEPTED_MINECRAFT, guiFactory = Reference.GUIFACTORY)
 public class GeneticsReborn {
 
 	@Mod.Instance
 	public static GeneticsReborn instance;
+
+	public static Configuration config;
 
 	public static final CreativeTabs GRtab = new CreativeTabGR(CreativeTabs.getNextID(), "GRtab");
 
@@ -67,8 +69,9 @@ public class GeneticsReborn {
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		log = event.getModLog();
-		Configuration config = new Configuration(new File(event.getModConfigurationDirectory().getAbsolutePath() + File.separator + "GeneticsReborn/GeneticsReborn.cfg"));
-		loadConfig(config);
+		config = new Configuration(new File(event.getModConfigurationDirectory().getAbsolutePath() + File.separator + "GeneticsReborn/GeneticsReborn.cfg"));
+		config.load();
+		loadConfig();
 		JsonHandler.handleJson(event);
 
 		MobToGeneRegistry.init();
@@ -162,8 +165,7 @@ public class GeneticsReborn {
 	
 	
 
-	public static void loadConfig(Configuration config) {
-		config.load();
+	public static void loadConfig() {
 		final String general = "General Config";
 		final String genes = "Genes";
 		final String baseticks = "baseticks";

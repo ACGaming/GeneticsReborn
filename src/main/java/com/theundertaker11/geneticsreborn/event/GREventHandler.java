@@ -26,6 +26,7 @@ public class GREventHandler {
 	public static Map<String, Long> cooldownList = new HashMap<String, Long>();
 
 	public static void init() {
+		MinecraftForge.EVENT_BUS.register(new OnConfigChanged());
 		MinecraftForge.EVENT_BUS.register(new CapabilityHandler());
 		MinecraftForge.EVENT_BUS.register(new GREventHandler());
 		MinecraftForge.EVENT_BUS.register(new RightClickEntityEvent());
