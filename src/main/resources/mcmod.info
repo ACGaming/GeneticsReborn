@@ -3,14 +3,10 @@
   "modid": "geneticsreborn",
   "name": "Genetics Reborn",
   "description": "A genetics mod based on the 1.7.10 Advanced Genetics.",
-  "version": "1.14",
-  "mcversion": "1.12",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
   "url": "https://www.curseforge.com/minecraft/mc-mods/genetics-reborn",
-  "updateUrl": "",
   "authorList": ["TheUnderTaker11, abused_master, ClubPetey"],
-  "credits": "TeamDNA for the original advanced genetics mod",
-  "logoFile": "",
-  "screenshots": [],
-  "dependencies": []
+  "credits": "TeamDNA for the original advanced genetics mod"
 }
 ]
