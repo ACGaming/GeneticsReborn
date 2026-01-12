@@ -37,10 +37,10 @@ public class AIChangeEvents {
 				map.registerAttribute(GeneticsReborn.EFFICIENCY_ATT);
 		}
 
-		if (e instanceof EntityCreeper) attachScareTask(event, (EntityCreature) event.getEntity(), this::hasCreeperGene);
-		if (e instanceof EntityZombie) attachScareTask(event, (EntityCreature) event.getEntity(), this::hasZombieGene);
-		if (e instanceof EntitySkeleton) attachScareTask(event, (EntityCreature) event.getEntity(), this::hasSkeletonGene);
-		if (e instanceof EntitySpider) attachScareTask(event, (EntityCreature) event.getEntity(), this::hasSpiderGene);
+		if (e instanceof EntityCreeper) attachScareTask((EntityCreature) event.getEntity(), this::hasCreeperGene);
+		if (e instanceof EntityZombie) attachScareTask((EntityCreature) event.getEntity(), this::hasZombieGene);
+		if (e instanceof EntitySkeleton) attachScareTask((EntityCreature) event.getEntity(), this::hasSkeletonGene);
+		if (e instanceof EntitySpider) attachScareTask((EntityCreature) event.getEntity(), this::hasSpiderGene);
 	}
 
 	private boolean hasScareGene(@Nullable EntityPlayer player, EnumGenes gene) {
@@ -62,36 +62,47 @@ public class AIChangeEvents {
 	private boolean hasSpiderGene(@Nullable EntityPlayer player) {
 		return hasScareGene(player, EnumGenes.SCARE_SPIDERS);
 	}
-	
-	public void attachScareTask(EntityJoinWorldEvent event, EntityCreature entity, Predicate<? super EntityPlayer> predicate) {
-		if (entity instanceof EntityCreeper)
-			entity.tasks.addTask(3, new EntityAIAvoidEntity<>(entity, EntityPlayer.class, predicate, 6.0F, 1.0D, 1.2D));
 
-		if (entity instanceof EntityPigZombie)
-			for (Object a : entity.targetTasks.taskEntries.toArray()) {
-				EntityAIBase ai = ((EntityAITaskEntry) a).action;
-				if (ai instanceof EntityAINearestAttackableTarget) {
-					entity.targetTasks.removeTask(ai);
-					entity.targetTasks.addTask(0, new AIChangeEvents.AITargetAggressor<>(entity, EntityPlayer.class, 10, true, false, predicate));
-				}
-			}
-		else if (entity instanceof EntitySpider)
-			for (Object a : entity.targetTasks.taskEntries.toArray()) {
-				EntityAIBase ai = ((EntityAITaskEntry) a).action;
-				if (ai instanceof EntityAINearestAttackableTarget) {
-					entity.targetTasks.removeTask(ai);
-					entity.targetTasks.addTask(0, new AIChangeEvents.AISpiderTarget<>(entity, EntityPlayer.class, 10, true, false, player -> !predicate.test(player)));
-				}
-			}
-		else
-			for (Object a : entity.targetTasks.taskEntries.toArray()) {
-				EntityAIBase ai = ((EntityAITaskEntry) a).action;
-				if (ai instanceof EntityAINearestAttackableTarget) {
-					entity.targetTasks.removeTask(ai);
-					entity.targetTasks.addTask(0, new EntityAINearestAttackableTarget<>(entity, EntityPlayer.class, 10, true, false, player -> !predicate.test(player)));
-				}
-		}
-	}
+    public void attachScareTask(EntityCreature entity, Predicate<? super EntityPlayer> predicate) {
+        if (entity instanceof EntityCreeper) {
+            entity.tasks.addTask(3, new EntityAIAvoidEntity<>(entity, EntityPlayer.class, predicate, 6.0F, 1.0D, 1.2D));
+            for (EntityAITaskEntry a : entity.targetTasks.taskEntries) {
+                EntityAIBase ai = a.action;
+                if (ai instanceof EntityAINearestAttackableTarget && a.priority == 1) {
+                    entity.targetTasks.removeTask(ai);
+                    entity.targetTasks.addTask(1, new EntityAINearestAttackableTarget<>(entity, EntityPlayer.class, 10, true, false, player -> !predicate.test(player)));
+                    break;
+                }
+            }
+        } else if (entity instanceof EntityPigZombie) {
+            for (EntityAITaskEntry a : entity.targetTasks.taskEntries) {
+                EntityAIBase ai = a.action;
+                if (ai instanceof EntityAINearestAttackableTarget && a.priority == 2) {
+                    entity.targetTasks.removeTask(ai);
+                    entity.targetTasks.addTask(2, new AIChangeEvents.AITargetAggressor<>(entity, EntityPlayer.class, 10, true, false, predicate));
+                    break;
+                }
+            }
+        } else if (entity instanceof EntitySpider) {
+            for (EntityAITaskEntry a : entity.targetTasks.taskEntries) {
+                EntityAIBase ai = a.action;
+                if (ai instanceof EntityAINearestAttackableTarget && a.priority == 2) {
+                    entity.targetTasks.removeTask(ai);
+                    entity.targetTasks.addTask(2, new AIChangeEvents.AISpiderTarget<>(entity, EntityPlayer.class, 10, true, false, player -> !predicate.test(player)));
+                    break;
+                }
+            }
+        } else {
+            for (EntityAITaskEntry a : entity.targetTasks.taskEntries) {
+                EntityAIBase ai = a.action;
+                if (ai instanceof EntityAINearestAttackableTarget && a.priority == 2) {
+                    entity.targetTasks.removeTask(ai);
+                    entity.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(entity, EntityPlayer.class, 10, true, false, player -> !predicate.test(player)));
+                    break;
+                }
+            }
+        }
+    }
 	
 	static class AITargetAggressor<T extends EntityLivingBase> extends EntityAINearestAttackableTarget<T> {
         
